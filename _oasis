@@ -1,0 +1,27 @@
+OASISFormat: 0.4
+Name:        ogumbo
+Version:     0.0.1-alpha
+Synopsis:    OCaml wrapper for the Gumbo HTML5 parser
+Authors:     Benjamin Graf
+License:     MIT
+Plugins:     DevFiles (0.4)
+
+Library "ogumbo"
+  Path:       lib
+  BuildTools: ocamlbuild
+  Modules:
+    Gumbo,
+    Gumbo_output,
+    Gumbo_doc,
+    Gumbo_node,
+    Gumbo_parser
+  CSources:   ogumbo_stubs.c
+  CCLib+:     -lgumbo
+
+Executable playground
+  Path: playground
+  BuildTools: ocamlbuild
+  BuildDepends: ogumbo
+  MainIs: playground.ml
+  CompiledObject: best
+  
