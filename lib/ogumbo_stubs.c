@@ -345,11 +345,14 @@ value ogumbo_node_value(value onode) {
   switch (node->type) {
   case GUMBO_NODE_DOCUMENT:
     result_ptr = &node->v.document;
+    break;
   case GUMBO_NODE_ELEMENT:
   case GUMBO_NODE_TEMPLATE:
     result_ptr = &node->v.element;
+    break;
   default:
     result_ptr = &node->v.text;
+    break;
   }
 
   result = caml_alloc(1, node->type);
