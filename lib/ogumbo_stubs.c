@@ -39,7 +39,6 @@ static struct container *container_init(
     GumboOutput *output,
     GumboOptions const * options)
 {
-  printf("initializing container\n");
   if (container == NULL)
     return NULL;
 
@@ -89,7 +88,6 @@ static struct container *container_new(
 
 static void container_del(struct container *container)
 {
-  printf("freeing container\n");
   if (container != NULL) {
     container_deinit(container);
     free(container);
@@ -98,17 +96,14 @@ static void container_del(struct container *container)
 
 
 static void container_incref(struct container *container) {
-  printf("incref\n");
   assert(container != NULL);
   container->ref_count++;
 }
 
 
 static void container_decref(struct container *container) {
-  printf("decref\n");
   assert(container != NULL);
 
-  printf("container decref\n");
   if (container->ref_count > 0)
     container->ref_count--;
 
@@ -172,7 +167,6 @@ static struct ptr_pair *ptr_pair_init(struct ptr_pair *pair,
 
 
 static void ptr_pair_value_finalize(value v) {
-  printf("finalize!\n");
   struct ptr_pair *pair = ptr_pair_val(v);
   container_decref(pair->container);
 }
@@ -235,11 +229,6 @@ value ogumbo_parse(value ostr)
   GumboOutput *output = gumbo_parse_with_options(&kGumboDefaultOptions,
                                                  source_buffer_copy,
                                                  source_buffer_size);
-
-  printf("o->root = %p\n", output->root);
-  printf("o->root->parent = %p\n", output->root->parent);
-  printf("o->doc  = %p\n", output->document);
-  printf("o->doc->parent  = %p\n", output->document->parent);
 
   struct container *container = container_new(source_buffer_copy,
                                               source_buffer_size,
@@ -306,6 +295,65 @@ value ogumbo_document_system_identifier(value odocument) {
   const struct ptr_pair *pair = ptr_pair_val(odocument);
   result = caml_copy_string(
       pair->container->output->document->v.document.system_identifier);
+
+  CAMLreturn(result);
+}
+
+
+/* Node */
+
+value ogumbo_node_parent(value onode) {
+  CAMLparam1(onode);
+  CAMLlocal1(result);  
+
+  /* This function will return 'a option = Some 'a | None
+   * with None    -> Val_int(0)
+   *      Some x  -> Block(tag=0, Field(0 = x))
+   */
+
+  struct ptr_pair *pair = ptr_pair_val(onode);
+  GumboNode *parent = ((GumboNode*)pair->pointer)->parent;
+
+  if (parent == NULL) {
+    /* => None */
+    result = Val_int(0);
+  } else {
+    /* => Some (parent) */
+    result = caml_alloc(1, 0);
+    Store_field(result, 0, ptr_pair_value_new(pair->container, parent));
+  }
+
+  CAMLreturn(result);
+}
+
+value ogumbo_node_index(value onode) {
+  CAMLparam1(onode);
+  struct ptr_pair *pair = ptr_pair_val(onode);
+  long int index = ((GumboNode*)pair->pointer)->index_within_parent;
+  CAMLreturn(Val_long(index));
+}
+
+value ogumbo_node_value(value onode) {
+  CAMLparam1(onode);
+  CAMLlocal1(result);
+
+  struct ptr_pair *pair = ptr_pair_val(onode);
+  GumboNode *node = (GumboNode*)pair->pointer;
+
+  void *result_ptr = NULL;
+
+  switch (node->type) {
+  case GUMBO_NODE_DOCUMENT:
+    result_ptr = &node->v.document;
+  case GUMBO_NODE_ELEMENT:
+  case GUMBO_NODE_TEMPLATE:
+    result_ptr = &node->v.element;
+  default:
+    result_ptr = &node->v.text;
+  }
+
+  result = caml_alloc(1, node->type);
+  Store_field(result, 0, ptr_pair_value_new(pair->container, result_ptr));
 
   CAMLreturn(result);
 }

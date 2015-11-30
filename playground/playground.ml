@@ -20,11 +20,10 @@ let doc2 = "
   
 
 let () =
-  let output = Gumbo.parse doc2 |> Gumbo_output.document in
-  
-  print_endline ("name: " ^ (Gumbo_doc.name output));
-  print_endline ("pub:  " ^ (Gumbo_doc.public_identifier output));
-  print_endline ("sys:  " ^ (Gumbo_doc.system_identifier output));
+  let out = Gumbo.parse doc in
+  let root  = Gumbo_output.root out in
 
-  ()
+  Gumbo_node.value root
+  |> Gumbo_node.value_type_to_string
+  |> print_endline
 
