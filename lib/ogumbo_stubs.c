@@ -273,7 +273,9 @@ value ogumbo_output_root(value ooutput) {
 
 value ogumbo_document_has_doctype(value odocument) {
   CAMLparam1(odocument);
-  CAMLreturn(Val_bool(true));
+  bool has_doctype =
+    ptr_pair_val(odocument)->container->output->document->v.document.has_doctype;
+  CAMLreturn(Val_bool(has_doctype));
 }
 
 value ogumbo_document_name(value odocument) {

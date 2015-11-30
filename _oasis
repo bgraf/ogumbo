@@ -18,6 +18,20 @@ Library "ogumbo"
   CSources:   ogumbo_stubs.c
   CCLib+:     -lgumbo
 
+Executable "test_ogumbo"
+  Build$: flag(tests)
+  Install: false
+  Path: lib_test
+  BuildTools: ocamlbuild
+  MainIs: test_ogumbo.ml
+  BuildDepends: 
+    oUnit (>= 2.0),
+    ogumbo
+  CompiledObject: best
+
+Test "ogumbo"
+  Command: $test_ogumbo
+
 Executable playground
   Path: playground
   BuildTools: ocamlbuild
