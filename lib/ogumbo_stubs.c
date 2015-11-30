@@ -25,6 +25,8 @@
 
 struct container {
   size_t ref_count;
+  char *source_buffer;
+  size_t source_buffer_size;
   GumboOutput *output;
   GumboOptions options;
 };
@@ -32,6 +34,8 @@ struct container {
 
 static struct container *container_init(
     struct container *container,
+    char *source_buffer,
+    size_t source_buffer_size,
     GumboOutput *output,
     GumboOptions const * options)
 {
@@ -41,14 +45,17 @@ static struct container *container_init(
 
   assert(container != NULL);
   assert(output != NULL);
+  assert(source_buffer != NULL);
 
   container->ref_count = 0;
 
   container->output = output;
   
+  container->source_buffer = source_buffer;
+  container->source_buffer_size = source_buffer_size;
+
   if (options == NULL)
     options = &kGumboDefaultOptions;
-
   memcpy(&container->options, options, sizeof(GumboOptions));
 
   return container;
@@ -56,18 +63,26 @@ static struct container *container_init(
 
 
 static void container_deinit(struct container *container) {
-  if (container != NULL && container->output != NULL)
+  if (container == NULL)
+    return;
+
+  if (container->output != NULL)
     gumbo_destroy_output(&container->options, container->output);
+  if (container->source_buffer != NULL)
+    free(container->source_buffer);
 }
 
 
 static struct container *container_new(
+    char *source_buffer,
+    size_t source_buffer_size,
     GumboOutput *output,
     GumboOptions const * options)
 {
   assert(output != NULL);
 
   return container_init(malloc(sizeof(struct container)),
+                        source_buffer, source_buffer_size,
                         output, options);
 }
                              
@@ -211,23 +226,34 @@ value ogumbo_parse(value ostr)
 {
   CAMLparam1(ostr);
 
-  char *input = String_val(ostr);
+  char *source_buffer = String_val(ostr);
+  size_t source_buffer_size = caml_string_length(ostr);
 
-  GumboOutput *output = gumbo_parse(input);
+  char *source_buffer_copy = "";
+  if (source_buffer_size > 0) {
+    source_buffer_copy = malloc(source_buffer_size * sizeof(char));
+    memcpy(source_buffer_copy, source_buffer, source_buffer_size);
+  }
+
+  GumboOutput *output = gumbo_parse_with_options(&kGumboDefaultOptions,
+                                                 source_buffer_copy,
+                                                 source_buffer_size);
 
   printf("o->root = %p\n", output->root);
   printf("o->root->parent = %p\n", output->root->parent);
   printf("o->doc  = %p\n", output->document);
   printf("o->doc->parent  = %p\n", output->document->parent);
 
-  struct container *container = container_new(output, &kGumboDefaultOptions);
+  struct container *container = container_new(source_buffer_copy,
+                                              source_buffer_size,
+                                              output,
+                                              &kGumboDefaultOptions);
 
   CAMLreturn(ptr_pair_value_new(container, NULL));
 }
 
 value ogumbo_output_document(value ooutput) {
   CAMLparam1(ooutput);
-
   CAMLlocal1(result);
 
   result = ptr_pair_value_dup(ooutput, NULL);
@@ -238,7 +264,6 @@ value ogumbo_output_document(value ooutput) {
 
 value ogumbo_output_root(value ooutput) {
   CAMLparam1(ooutput);
-
   CAMLlocal1(result);
 
   struct ptr_pair *pair = ptr_pair_val(ooutput);
