@@ -229,11 +229,8 @@ value ogumbo_parse(value ostr)
   char *source_buffer = String_val(ostr);
   size_t source_buffer_size = caml_string_length(ostr);
 
-  char *source_buffer_copy = "";
-  if (source_buffer_size > 0) {
-    source_buffer_copy = malloc(source_buffer_size * sizeof(char));
-    memcpy(source_buffer_copy, source_buffer, source_buffer_size);
-  }
+  char *source_buffer_copy = malloc((source_buffer_size + 1) * sizeof(char));
+  memcpy(source_buffer_copy, source_buffer, source_buffer_size+1);
 
   GumboOutput *output = gumbo_parse_with_options(&kGumboDefaultOptions,
                                                  source_buffer_copy,
