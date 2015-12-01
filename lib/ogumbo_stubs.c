@@ -360,3 +360,30 @@ value ogumbo_node_value(value onode) {
 
   CAMLreturn(result);
 }
+
+
+/* Element */
+
+value ogumbo_elem_tag(value oelem) {
+}
+
+value ogumbo_elem_namespace(value oelem) {
+}
+
+value ogumbo_elem_original_tag(value oelem) {
+}
+
+value ogumbo_elem_original_end_tag(value oelem) {
+}
+
+value ogumbo_elem_start_pos(value oelem) {
+}
+
+value ogumbo_elem_end_pos(value oelem) {
+}
+
+value ogumbo_elem_children(value oelem) {
+}
+
+value ogumbo_elem_attributes(value oelem) {
+}
