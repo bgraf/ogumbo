@@ -13,6 +13,7 @@ Library "ogumbo"
     Gumbo
   CSources:   ogumbo_stubs.c
   CCLib+:     -lgumbo
+  CCOpt+:     -std=c99
 
 #Executable "test_ogumbo"
 #  Build$: flag(tests)

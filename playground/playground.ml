@@ -10,7 +10,7 @@ let doc = "
     <h1>Hello there!</h1>
     blabla
   </body>
-</html>
+  </html>
 "
 
 let doc2 = "
@@ -29,6 +29,22 @@ let () =
       elem
       |> Element.namespace
       |> Tag.namespace_to_string
-      |> Printf.printf "namespace = %s\n"
+      |> Printf.printf "namespace = %s\n";
+
+      elem
+      |> Element.original_tag
+      |> Printf.printf "original_tag = '%s'\n";
+
+      elem
+      |> Element.children
+      |> List.length
+      |> Printf.printf "num children = %d\n";
+
+      elem
+      |> Element.children
+      |> List.iter (fun child_node -> match Node.value child_node with
+                    | Node.Element elem -> 
+                        elem |> Element.original_tag |> Printf.printf "  child-tag: %s\n"
+                    | _  -> ())
     end
   | _ -> print_endline "not an element.."

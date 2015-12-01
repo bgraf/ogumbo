@@ -219,6 +219,11 @@ enum source_position_field {
   SOURCE_POSITION_FIELD_OFFSET
 };
 
+/**
+ * Make ocaml value of source position.
+ * @param   source_position   The source position.
+ * @return  Ocaml value containing the source position.
+ */
 static value value_of_source_pos(GumboSourcePosition *source_position) {
   value result = caml_alloc(3, 0);
   
@@ -230,6 +235,47 @@ static value value_of_source_pos(GumboSourcePosition *source_position) {
               Val_long(source_position->offset));
 
   return result;
+}
+
+/**
+ * Make ocaml value of string piece.
+ * @param   string_piece  The string piece.
+ * @return  Ocaml string containing the bytes referenced by the string piece.
+ */
+static value value_of_string_piece(GumboStringPiece *string_piece) {
+  size_t len = string_piece->length;
+  value result = caml_alloc_string(len);
+
+  for (size_t i = 0; i < len; i++)
+    Byte(result, i) = string_piece->data[i];
+
+  return result;
+}
+
+/**
+ * Make ocaml list of gumbo vector.
+ * @param   vector      The vector.
+ * @param   container   The container associated with the vector entries.
+ * @return  Ocaml list containing the vector's entries.
+ */
+static value value_of_vector(GumboVector *vector,
+                             struct container *container)
+{
+  value current = Val_int(0);
+
+  if (vector->data == NULL)
+    return current;
+
+  const size_t n = vector->length;
+  for (size_t i = 0; i < n; i++) {
+    value next = caml_alloc_tuple(2);
+    Store_field(next, 0, ptr_pair_value_new(container, vector->data[n-i-1]));
+    Store_field(next, 1, current);
+
+    current = next;
+  }
+
+  return current;
 }
 
 
@@ -402,14 +448,22 @@ value ogumbo_elem_namespace(value oelem) {
 
 value ogumbo_elem_original_tag(value oelem) {
   CAMLparam1(oelem);
-  //TODO
-  CAMLreturn(caml_copy_string(""));
+  CAMLlocal1(result);
+  
+  GumboElement *elem = ptr_pair_val(oelem)->pointer;
+  result = value_of_string_piece(&elem->original_tag);
+
+  CAMLreturn(result);
 }
 
 value ogumbo_elem_original_end_tag(value oelem) {
   CAMLparam1(oelem);
-  //TODO
-  CAMLreturn(caml_copy_string(""));
+  CAMLlocal1(result);
+
+  GumboElement *elem = ptr_pair_val(oelem)->pointer;
+  result = value_of_string_piece(&elem->original_end_tag);
+
+  CAMLreturn(result);
 }
 
 value ogumbo_elem_start_pos(value oelem) {
@@ -430,12 +484,22 @@ value ogumbo_elem_end_pos(value oelem) {
 
 value ogumbo_elem_children(value oelem) {
   CAMLparam1(oelem);
-  //TODO
-  CAMLreturn(Val_int(0));
+  CAMLlocal1(result);
+
+  struct ptr_pair *pair = ptr_pair_val(oelem);
+  GumboElement *elem = pair->pointer;
+  result = value_of_vector(&elem->children, pair->container);
+
+  CAMLreturn(result);
 }
 
 value ogumbo_elem_attributes(value oelem) {
   CAMLparam1(oelem);
-  //TODO
-  CAMLreturn(Val_int(0));
+  CAMLlocal1(result);
+
+  struct ptr_pair *pair = ptr_pair_val(oelem);
+  GumboElement *elem = pair->pointer;
+  result = value_of_vector(&elem->attributes, pair->container);
+
+  CAMLreturn(result);
 }
