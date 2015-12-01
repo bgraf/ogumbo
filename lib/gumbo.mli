@@ -4,7 +4,11 @@ module Attribute : sig
 end
 
 module Source : sig
-  type pos
+  type pos = {
+      line    : int;
+      column  : int;
+      offset  : int;
+    }
 end
 
 module Text : sig
@@ -18,6 +22,8 @@ module Tag : sig
     | HTML
     | SVG
     | MathML
+
+  val namespace_to_string : namespace -> string
 end
 
 module rec Document : sig

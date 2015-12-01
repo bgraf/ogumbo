@@ -17,13 +17,18 @@ let doc2 = "
 <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">
 <html></html>
 "
-  
+ 
+open Gumbo
 
 let () =
-  let out = Gumbo.parse doc in
-  let root  = Gumbo_output.root out in
+  let out = Parser.parse doc in
+  let root = Output.root out in
 
-  Gumbo_node.value root
-  |> Gumbo_node.value_type_to_string
-  |> print_endline
-
+  match Node.value root with
+  | Node.Element elem -> begin
+      elem
+      |> Element.namespace
+      |> Tag.namespace_to_string
+      |> Printf.printf "namespace = %s\n"
+    end
+  | _ -> print_endline "not an element.."

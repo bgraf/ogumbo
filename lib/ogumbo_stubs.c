@@ -213,6 +213,26 @@ static value ptr_pair_value_new(struct container *container,
  *
  */
 
+enum source_position_field {
+  SOURCE_POSITION_FIELD_LINE = 0,
+  SOURCE_POSITION_FIELD_COLUMN,
+  SOURCE_POSITION_FIELD_OFFSET
+};
+
+static value value_of_source_pos(GumboSourcePosition *source_position) {
+  value result = caml_alloc(3, 0);
+  
+  Store_field(result, SOURCE_POSITION_FIELD_LINE,
+              Val_long(source_position->line));
+  Store_field(result, SOURCE_POSITION_FIELD_COLUMN,
+              Val_long(source_position->column));
+  Store_field(result, SOURCE_POSITION_FIELD_OFFSET,
+              Val_long(source_position->offset));
+
+  return result;
+}
+
+
 #define ptr_pair_value_dup(v,p)\
   (ptr_pair_value_new(ptr_pair_val(v)->container, p))
 
@@ -365,25 +385,57 @@ value ogumbo_node_value(value onode) {
 /* Element */
 
 value ogumbo_elem_tag(value oelem) {
+  CAMLparam1(oelem);
+
+  GumboElement *elem = ptr_pair_val(oelem)->pointer;
+
+  CAMLreturn(Val_int(elem->tag));
 }
 
 value ogumbo_elem_namespace(value oelem) {
+  CAMLparam1(oelem);
+
+  GumboElement *elem = ptr_pair_val(oelem)->pointer;
+
+  CAMLreturn(Val_int(elem->tag_namespace));
 }
 
 value ogumbo_elem_original_tag(value oelem) {
+  CAMLparam1(oelem);
+  //TODO
+  CAMLreturn(caml_copy_string(""));
 }
 
 value ogumbo_elem_original_end_tag(value oelem) {
+  CAMLparam1(oelem);
+  //TODO
+  CAMLreturn(caml_copy_string(""));
 }
 
 value ogumbo_elem_start_pos(value oelem) {
+  CAMLparam1(oelem);
+  CAMLlocal1(result);
+  GumboElement *elem = ptr_pair_val(oelem)->pointer;
+  result = value_of_source_pos(&elem->start_pos);
+  CAMLreturn(result);
 }
 
 value ogumbo_elem_end_pos(value oelem) {
+  CAMLparam1(oelem);
+  CAMLlocal1(result);
+  GumboElement *elem = ptr_pair_val(oelem)->pointer;
+  result = value_of_source_pos(&elem->end_pos);
+  CAMLreturn(result);
 }
 
 value ogumbo_elem_children(value oelem) {
+  CAMLparam1(oelem);
+  //TODO
+  CAMLreturn(Val_int(0));
 }
 
 value ogumbo_elem_attributes(value oelem) {
+  CAMLparam1(oelem);
+  //TODO
+  CAMLreturn(Val_int(0));
 }

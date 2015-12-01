@@ -4,7 +4,11 @@ module Attribute = struct
 end
 
 module Source = struct
-  type pos
+  type pos = {
+      line    : int;
+      column  : int;
+      offset  : int;
+    }
 end
 
 module Text = struct
@@ -18,6 +22,11 @@ module Tag = struct
     | HTML
     | SVG
     | MathML
+
+  let namespace_to_string = function
+    | HTML    -> "HTML"
+    | SVG     -> "SVG"
+    | MathML  -> "MathML"
 end
 
 module rec Document : sig

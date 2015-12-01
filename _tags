@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: c9b82198a887ef7782542a8b8a4bfb04)
+# DO NOT EDIT (digest: 4d59814b157e5e90e8a0e424a29465ad)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -22,4 +22,7 @@ true: annot, bin_annot
 "lib/libogumbo_stubs.a": oasis_library_ogumbo_cclib
 "lib/dllogumbo_stubs.so": oasis_library_ogumbo_cclib
 <lib/ogumbo.{cma,cmxa}>: use_libogumbo_stubs
+# Executable playground
+<playground/playground.{native,byte}>: use_ogumbo
+<playground/*.ml{,i,y}>: use_ogumbo
 # OASIS_STOP

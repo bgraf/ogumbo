@@ -28,10 +28,10 @@ Library "ogumbo"
 #Test "ogumbo"
 #  Command: $test_ogumbo
 #
-#Executable playground
-#  Path: playground
-#  BuildTools: ocamlbuild
-#  BuildDepends: ogumbo
-#  MainIs: playground.ml
-#  CompiledObject: best
+Executable playground
+  Path: playground
+  BuildTools: ocamlbuild
+  BuildDepends: ogumbo
+  MainIs: playground.ml
+  CompiledObject: best
   
