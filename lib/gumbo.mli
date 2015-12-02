@@ -13,6 +13,10 @@ end
 
 module Text : sig
   type t
+
+  val text          : t -> string
+  val original_text : t -> string
+  val start_pos     : t -> Source.pos
 end
 
 module Tag : sig

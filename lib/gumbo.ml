@@ -13,6 +13,10 @@ end
 
 module Text = struct
   type t
+
+  external text          : t -> string      = "ogumbo_text_text"
+  external original_text : t -> string      = "ogumbo_text_original_text"
+  external start_pos     : t -> Source.pos  = "ogumbo_text_start_pos"
 end
 
 module Tag = struct

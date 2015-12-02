@@ -511,3 +511,27 @@ value ogumbo_tag_to_string(value otag) {
   CAMLparam1(otag);
   CAMLreturn(caml_copy_string(gumbo_normalized_tagname(Int_val(otag))));
 }
+
+/* Text */
+
+value ogumbo_text_text(value otext) {
+  CAMLparam1(otext);
+  GumboText *text = ptr_pair_val(otext)->pointer;
+  CAMLreturn(caml_copy_string(text->text));
+}
+
+value ogumbo_text_original_text(value otext) {
+  CAMLparam1(otext);
+  CAMLlocal1(result);
+  GumboText *text = ptr_pair_val(otext)->pointer;
+  result = value_of_string_piece(&text->original_text);
+  CAMLreturn(result);
+}
+
+value ogumbo_text_start_pos(value otext) {
+  CAMLparam1(otext);
+  CAMLlocal1(result);
+  GumboText *text = ptr_pair_val(otext)->pointer;
+  result = value_of_source_pos(&text->start_pos);
+  CAMLreturn(result);
+}
