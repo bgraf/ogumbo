@@ -20,31 +20,37 @@ let doc2 = "
  
 open Gumbo
 
+let node_to_string node =
+  match Node.value node with
+  | Node.Element elem ->
+      Element.tag elem
+      |> Tag.to_string
+      |> Printf.sprintf "Element[%s]"
+  | Node.Template _   -> "Template[]"
+  | Node.Text _       -> "Text[]"
+  | Node.Whitespace _ -> "Whitespace[]"
+  | Node.CDATA      _ -> "CDATA[]"
+  | Node.Comment    _ -> "Comment[]"
+  | Node.Document   _ -> "Document[]"
+
+let rec print_doc ?(layer=0) node =
+  let indent = String.make (layer*4) ' ' in
+
+  node_to_string node
+  |> Printf.printf "%s %s\n" indent;
+
+  match Node.value node with
+  | Node.Element elem ->
+      elem
+      |> Element.children 
+      |> List.iter (print_doc ~layer:(layer+1))
+  | _ -> ()
+
+
+
+
 let () =
   let out = Parser.parse doc in
   let root = Output.root out in
 
-  match Node.value root with
-  | Node.Element elem -> begin
-      elem
-      |> Element.namespace
-      |> Tag.namespace_to_string
-      |> Printf.printf "namespace = %s\n";
-
-      elem
-      |> Element.original_tag
-      |> Printf.printf "original_tag = '%s'\n";
-
-      elem
-      |> Element.children
-      |> List.length
-      |> Printf.printf "num children = %d\n";
-
-      elem
-      |> Element.children
-      |> List.iter (fun child_node -> match Node.value child_node with
-                    | Node.Element elem -> 
-                        elem |> Element.original_tag |> Printf.printf "  child-tag: %s\n"
-                    | _  -> ())
-    end
-  | _ -> print_endline "not an element.."
+  print_doc root

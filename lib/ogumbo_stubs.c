@@ -503,3 +503,11 @@ value ogumbo_elem_attributes(value oelem) {
 
   CAMLreturn(result);
 }
+
+
+/* Tag */
+
+value ogumbo_tag_to_string(value otag) {
+  CAMLparam1(otag);
+  CAMLreturn(caml_copy_string(gumbo_normalized_tagname(Int_val(otag))));
+}
