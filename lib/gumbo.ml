@@ -1,14 +1,27 @@
 
-module Attribute = struct
-  type t
-end
-
 module Source = struct
   type pos = {
       line    : int;
       column  : int;
       offset  : int;
     }
+end
+
+module Attribute = struct
+  type t
+
+  external namespace : t -> unit          = "ogumbo_attr_namespace"
+  external name : t -> string             = "ogumbo_attr_name"
+  external original_name : t -> string    = "ogumbo_attr_original_name"
+  external value : t -> string            = "ogumbo_attr_value"
+  external original_value : t -> string   = "ogumbo_attr_original_value"
+  external name_start : t -> Source.pos   = "ogumbo_attr_name_start"
+  external name_end : t -> Source.pos     = "ogumbo_attr_name_end"
+  external value_start : t -> Source.pos  = "ogumbo_attr_value_start"
+  external value_end : t -> Source.pos    = "ogumbo_attr_value_end"
+
+  let to_string attr =
+    Printf.sprintf "%s=\"%s\"" (name attr) (value attr)
 end
 
 module Text = struct

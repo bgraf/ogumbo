@@ -1,14 +1,25 @@
 
-module Attribute : sig
-  type t
-end
-
 module Source : sig
   type pos = {
       line    : int;
       column  : int;
       offset  : int;
     }
+end
+
+module Attribute : sig
+  type t
+
+  val namespace       : t -> unit
+  val name            : t -> string
+  val original_name   : t -> string
+  val value           : t -> string
+  val original_value  : t -> string
+  val name_start      : t -> Source.pos
+  val name_end        : t -> Source.pos
+  val value_start     : t -> Source.pos
+  val value_end       : t -> Source.pos
+  val to_string       : t -> string
 end
 
 module Text : sig

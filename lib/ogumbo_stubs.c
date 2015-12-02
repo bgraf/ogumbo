@@ -562,3 +562,63 @@ value ogumbo_text_start_pos(value otext) {
   result = value_of_source_pos(&text->start_pos);
   CAMLreturn(result);
 }
+
+
+/* Attribute */
+
+value ogumbo_attr_namespace(value oattr) {
+  CAMLparam1(oattr);
+  CAMLreturn(Val_unit);
+}
+
+value ogumbo_attr_name(value oattr) {
+  CAMLparam1(oattr);
+  GumboAttribute *attr = ptr_pair_val(oattr)->pointer;
+  CAMLreturn(caml_copy_string(attr->name));
+}
+
+value ogumbo_attr_original_name(value oattr) {
+  CAMLparam1(oattr);
+  CAMLlocal1(result);
+  GumboAttribute *attr = ptr_pair_val(oattr)->pointer;
+  result = value_of_string_piece(&attr->original_name);
+  CAMLreturn(result);
+}
+
+value ogumbo_attr_value(value oattr) {
+  CAMLparam1(oattr);
+  GumboAttribute *attr = ptr_pair_val(oattr)->pointer;
+  CAMLreturn(caml_copy_string(attr->value));
+}
+
+value ogumbo_attr_original_value(value oattr) {
+  CAMLparam1(oattr);
+  CAMLlocal1(result);
+  GumboAttribute *attr = ptr_pair_val(oattr)->pointer;
+  result = value_of_string_piece(&attr->original_value);
+  CAMLreturn(result);
+}
+
+value ogumbo_attr_name_start(value oattr) {
+  CAMLparam1(oattr);
+  GumboAttribute *attr = ptr_pair_val(oattr)->pointer;
+  CAMLreturn(value_of_source_pos(&attr->name_start));
+}
+
+value ogumbo_attr_name_end(value oattr) {
+  CAMLparam1(oattr);
+  GumboAttribute *attr = ptr_pair_val(oattr)->pointer;
+  CAMLreturn(value_of_source_pos(&attr->name_end));
+}
+
+value ogumbo_attr_value_start(value oattr) {
+  CAMLparam1(oattr);
+  GumboAttribute *attr = ptr_pair_val(oattr)->pointer;
+  CAMLreturn(value_of_source_pos(&attr->value_start));
+}
+
+value ogumbo_attr_value_end(value oattr) {
+  CAMLparam1(oattr);
+  GumboAttribute *attr = ptr_pair_val(oattr)->pointer;
+  CAMLreturn(value_of_source_pos(&attr->value_end));
+}
