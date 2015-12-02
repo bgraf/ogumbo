@@ -1,3 +1,10 @@
+(* 
+ * Ogumbo - OCaml wrapper for the Gumbo HTML5 parser.
+ *
+ * Copyright (C) 2015 Benjamin Graf (bgraf@uni-osnabrueck.de) 
+ *
+ * License: MIT, see LICENSE
+ *)
 
 module Parseflags = struct
   type t

@@ -1,9 +1,9 @@
 /**
  * Ogumbo - OCaml wrapper for the Gumbo HTML5 parser.
  *
+ * Copyright (C) 2015 Benjamin Graf (bgraf@uni-osnabrueck.de)
  *
- * Authors:
- *    Benjamin Graf     (bgraf@uni-osnabrueck.de)
+ * License: MIT, see LICENSE
  */
 
 #include <caml/mlvalues.h>
@@ -18,9 +18,19 @@
 #include <stdio.h>
 #include <string.h>
 
+
 /* # Chapter 1 - A container for parser output.
+ * 
+ * The parser output produced by the gumbo parser will be heap allocated,
+ * nevertheless, certain pointers will point to the original source buffer.
+ * Therefore any ocaml values that are the result of a parser application
+ * need to reference the original source buffer and the parser's result.
  *
- *
+ * Any ocaml value that needs a reference to the parser result will carry
+ * a pointer to a container structure that keeps a reference count,
+ * the parser's result and the original source buffer.
+ * When the last ocaml value is collected by the GC, the reference count
+ * drops to zero and the parser's result and source buffer will be free'd.
  */
 
 struct container {
@@ -30,7 +40,6 @@ struct container {
   GumboOutput *output;
   GumboOptions options;
 };
-
 
 static struct container *container_init(
     struct container *container,
@@ -60,7 +69,6 @@ static struct container *container_init(
   return container;
 }
 
-
 static void container_deinit(struct container *container) {
   if (container == NULL)
     return;
@@ -70,7 +78,6 @@ static void container_deinit(struct container *container) {
   if (container->source_buffer != NULL)
     free(container->source_buffer);
 }
-
 
 static struct container *container_new(
     char *source_buffer,
@@ -85,7 +92,6 @@ static struct container *container_new(
                         output, options);
 }
                              
-
 static void container_del(struct container *container)
 {
   if (container != NULL) {
@@ -94,12 +100,10 @@ static void container_del(struct container *container)
   }
 }
 
-
 static void container_incref(struct container *container) {
   assert(container != NULL);
   container->ref_count++;
 }
-
 
 static void container_decref(struct container *container) {
   assert(container != NULL);
@@ -165,12 +169,10 @@ static struct ptr_pair *ptr_pair_init(struct ptr_pair *pair,
 
 #define ptr_pair_val(v) ((struct ptr_pair *) Data_custom_val(v))
 
-
 static void ptr_pair_value_finalize(value v) {
   struct ptr_pair *pair = ptr_pair_val(v);
   container_decref(pair->container);
 }
-
 
 static int ptr_pair_value_compare(value v1, value v2) {
   const size_t p1 = (size_t)ptr_pair_val(v1)->pointer;
@@ -179,11 +181,9 @@ static int ptr_pair_value_compare(value v1, value v2) {
   return p1 == p2 ? 0 : (p1 > p2 ? 1 : -1);
 }
 
-
 static intnat ptr_pair_value_hash(value v) {
   return (size_t)ptr_pair_val(v)->pointer;
 }
-
 
 static struct custom_operations ptr_pair_value_operations = {
   "bgraf.ogumbo",
@@ -208,9 +208,9 @@ static value ptr_pair_value_new(struct container *container,
 }
 
 /* # Chapter 3 - Gluing together
- *
- *
- *
+ * 
+ * The functions defined in `gumbo.ml` point to the following callback
+ * functions that implement the functionality.
  */
 
 enum source_position_field {
@@ -279,9 +279,6 @@ static value value_of_vector(GumboVector *vector,
 }
 
 
-#define ptr_pair_value_dup(v,p)\
-  (ptr_pair_value_new(ptr_pair_val(v)->container, p))
-
 value ogumbo_parse(value ostr)
 {
   CAMLparam1(ostr);
@@ -311,8 +308,7 @@ value ogumbo_output_document(value ooutput) {
   CAMLparam1(ooutput);
   CAMLlocal1(result);
 
-  result = ptr_pair_value_dup(ooutput, NULL);
-  // result = ptr_pair_value_new(ptr_pair_val(ooutput)->container, NULL);
+  result = ptr_pair_value_new(ptr_pair_val(ooutput)->container, NULL);
   
   CAMLreturn(result);
 }
@@ -392,6 +388,7 @@ value ogumbo_document_children(value odocument) {
 
   CAMLreturn(result);
 }
+
 
 /* Node */
 
@@ -658,6 +655,7 @@ value ogumbo_attr_value_end(value oattr) {
 
 
 /* Parse flags */
+
 value ogumbo_parseflags_is_set(value oparseflags, value oflag) {
   CAMLparam2(oparseflags, oflag);
 

@@ -1,5 +1,14 @@
+(* 
+ * Ogumbo - OCaml wrapper for the Gumbo HTML5 parser.
+ *
+ * Copyright (C) 2015 Benjamin Graf (bgraf@uni-osnabrueck.de) 
+ *
+ * License: MIT, see LICENSE
+ *)
 
-(** Ocaml bindings for the Gumbo HTML5 parser library. *)
+(** Ocaml bindings for the Gumbo HTML5 parser library. 
+    
+    @see <https://github.com/google/gumbo-parser> The gumbo-parser repository. *)
 
 (** Parse flags associated with a node. *)
 module Parseflags : sig
