@@ -190,6 +190,7 @@ module Tag : sig
     | MathML
 
   val to_string : t -> string
+  val of_string : string -> t
 
   val namespace_to_string : namespace -> string
 end

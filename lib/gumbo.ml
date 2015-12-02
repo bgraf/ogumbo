@@ -192,6 +192,7 @@ module Tag = struct
     | MathML
 
   external to_string : t -> string = "ogumbo_tag_to_string"
+  external of_string : string -> t = "ogumbo_tag_of_string"
 
   let namespace_to_string = function
     | HTML    -> "HTML"

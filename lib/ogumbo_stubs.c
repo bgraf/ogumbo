@@ -559,6 +559,12 @@ value ogumbo_tag_to_string(value otag) {
   CAMLreturn(caml_copy_string(gumbo_normalized_tagname(Int_val(otag))));
 }
 
+value ogumbo_tag_of_string(value ostr) {
+  CAMLparam1(ostr);
+  const char *str = String_val(ostr);
+  CAMLreturn(Val_int(gumbo_tag_enum(str)));
+}
+
 /* Text */
 
 value ogumbo_text_text(value otext) {
