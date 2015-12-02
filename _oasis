@@ -15,6 +15,15 @@ Library "ogumbo"
   CCLib+:     -lgumbo
   CCOpt+:     -std=c99
 
+AlphaFeatures: ocamlbuild_more_args
+Document "api"
+  Type: ocamlbuild (0.4)
+  BuildTools: ocamldoc, ocamlbuild
+  Title: API reference for OGumbo
+  XOCamlbuildPath: .
+  XOCamlbuildExtraArgs: "-docflags '-colorize-code -short-functors -charset utf-8'"
+  XOCamlbuildLibraries: ogumbo
+
 #Executable "test_ogumbo"
 #  Build$: flag(tests)
 #  Install: false

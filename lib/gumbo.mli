@@ -1,7 +1,12 @@
 
+(** Ocaml bindings for the Gumbo HTML5 parser library. *)
+
+(** Parse flags associated with a node. *)
 module Parseflags : sig
+  (** Type representing a set of flags. *)
   type t
 
+  (** Possible flags. *)
   type flag = 
     | Normal
     | By_parser
@@ -15,37 +20,71 @@ module Parseflags : sig
     | Adoption_agency_moved
     | Foster_parented
 
+  (** Returns whether a [flag] is set in the given parse flags. *)
   val is_set : t -> flag -> bool
 end
 
+(** Provides source position. *)
 module Source : sig
+  (** Position in the source string. *)
   type pos = {
-      line    : int;
-      column  : int;
-      offset  : int;
+      line    : int; 
+      column  : int; 
+      offset  : int; 
     }
 end
 
+(** Html attributes. *)
 module Attribute : sig
+  (** Type representing an attribute. *)
   type t
 
+  (** Attribute namespaces. *)
   type namespace =
     | None
     | XLINK
     | XML
     | XMLNS
 
+  (** [namespace attr] returns the namespace of [attr]. *)
   val namespace       : t -> namespace
+
+  (** [name attr] returns the normalized (lowercase) name of [attr]. *)
   val name            : t -> string
+
+  (** [original_name] returns the name of [attr] as it
+      appeared in the source buffer. *)
   val original_name   : t -> string
+
+  (** [value attr] returns the value of [attr]. *)
   val value           : t -> string
+
+  (** [original_value attr] returns the value of [attr] as it
+      appeared in the source buffer, including quotation-marks. *)
   val original_value  : t -> string
+
+  (** [name_start attr] returns the start position of [attr]'s name
+      in the source buffer. *)
   val name_start      : t -> Source.pos
+
+  (** [name_end attr] returns the end position of [attr]'s name
+      in the source buffer. *)
   val name_end        : t -> Source.pos
+
+  (** [value_start attr] returns the start position of [attr]'s value
+      in the source buffer. *)
   val value_start     : t -> Source.pos
+
+  (** [value_end attr] returns the end position of [attr]'s value
+      in the source buffer. *)
   val value_end       : t -> Source.pos
+
+  (** [to_string attr] returns a string representation of the
+      name-value-tuple represented by [attr].
+      Given a name [foo] and key [bar] it will produce [foo="bar"]. *)
   val to_string       : t -> string
 
+  (** Returns a string representation of the namespace variant. *)
   val namespace_to_string : namespace -> string
 end
 
