@@ -97,15 +97,27 @@ module Attribute : sig
   val namespace_to_string : namespace -> string
 end
 
+(** Content, whitespace and comments. *)
 module Text : sig
+  (** Represents text in the source document. 
+      This can be whitespace, content or comments. *)
   type t
 
+  (** [text txt] returns the content of [txt]. *)
   val text          : t -> string
+
+  (** [original_text txt] returns the content of [txt] as it appeared in the
+      document. *)
   val original_text : t -> string
+
+  (** [start_pos txt] returns the start position of [txt] in the
+      source document. *)
   val start_pos     : t -> Source.pos
 end
 
+(** Tag. *)
 module Tag : sig
+  (** Represents a HTML tag. *)
   type t =
     | Html
     | Head
@@ -259,44 +271,100 @@ module Tag : sig
     | Rtc
     | Unknown
 
+  (** Represents a tag namespace. *)
   type namespace = 
     | HTML
     | SVG
     | MathML
 
+
+  (** [to_string tag] returns the lowercase string representation of [tag]. *)
   val to_string : t -> string
+
+  (** [of_string s] returns the tag of name [s].
+      If the string does not identify a specific tag the [Unknown] tag
+      is returned. *)
   val of_string : string -> t
 
+  (** [namespace_to_string ns] returns a string representation for the
+      namespace [ns]. *)
   val namespace_to_string : namespace -> string
 end
 
+(** Doctypes. *)
 module rec Document : sig
+  (** The document. *)
   type t
 
+  (** [has_doctype] returns whether this document has a doctype. *)
   val has_doctype       : t -> bool
+
+  (** If a doctype is present [name doc] will return the doctype of [doc].
+      Otherwise this will be the empty string. *)
   val name              : t -> string
+
+  (** If a public identifier is present [public_identifier doc] 
+      will return the public identifier of [doc].
+      Otherwise this will be the empty string. *)
   val public_identifier : t -> string
+
+  (** If a system identifier is present [system_identifier doc] 
+      will return the public identifier of [doc].
+      Otherwise this will be the empty string. *)
   val system_identifier : t -> string
+
+  (** [children doc] will return a list of children of [doc].
+      In the case that a whole HTML document was parsed,
+      this will be just one node that can also be obtained
+      by calling {!Output.root}. *)
   val children          : t -> Node.t list
 end
 
+(** A tag associated with child nodes and attributes. *)
 and Element : sig
+  (** Representation of an element. *)
   type t
 
+  (** [tag elem] returns the tag of [elem]. *)
   val tag               : t -> Tag.t
+
+  (** [namespace elem] returns the namespace of [elem]. *)
   val namespace         : t -> Tag.namespace
+
+  (** [original_tag elem] returns the string that indicated the tag
+      of [elem] as it appeared in the source document. *)
   val original_tag      : t -> string
+
+  (** [original_end_tag elem] returns the string that indicated the end tag
+      of [elem] as it appeared in the source document. 
+      In the case of an ill-formed document, the parser may insert
+      end tags.
+      This will result in the empty string being returned. *)
   val original_end_tag  : t -> string
+
+  (** [start_pos elem] returns the start position of [elem]. *)
   val start_pos         : t -> Source.pos
+
+  (** [end_pos elem] returns the end position of [elem]. *)
   val end_pos           : t -> Source.pos
+
+  (** [children elem] returns the list of child nodes of [elem]. *)
   val children          : t -> Node.t list
+
+  (** [attributes elem] returns the list of attributes of [elem]. *)
   val attributes        : t -> Attribute.t list
+
+  (** [attribute elem name] returns [Some(attr)] in case that an attribute
+      [name] is present and [None] otherwise. *)
   val attribute         : t -> string -> Attribute.t option
 end
 
+(** A node in the parse tree. *)
 and  Node : sig
+  (** Representation of a node. *)
   type t
 
+  (** Value contained in a node. *)
   type value =
     | Document    of Document.t
     | Element     of Element.t
@@ -306,22 +374,44 @@ and  Node : sig
     | Whitespace  of Text.t
     | Template    of Element.t
 
+  (** [parent node] will return [Some(parent_node)] in case that [node]
+      has a parent and [None] otherwise.
+
+      Except for the document node obtained by calling {!Output.document_node}
+      all nodes have parents. *)
   val parent : t -> t option 
+
+  (** [index_within_parent node] returns the index of [node] within its
+      parent node's children.
+      Indices are zero-based. *)
   val index_within_parent : t -> int
+
+  (** [value node] returns the [node]'s content. *)
   val value : t -> value 
+
+  (** [parse_flags node] returns the [node]'s parse flags. *)
   val parse_flags : t -> Parseflags.t
 end 
 
-
+(** Parser output. *)
 module Output : sig
+  (** Parser output. *)
   type t
 
+  (** [document out] returns the document node's content. *)
   val document      : t -> Document.t
+
+  (** [document_node out] returns the document node.
+      Usually this node will be the parent of the root node obtained
+      using {!root}. *)
   val document_node : t -> Node.t
+
+  (** [root out] returns the root node of the document. *)
   val root          : t -> Node.t
 end
 
-
+(** Parser entry points. *)
 module Parser : sig
+  (** [parse source] will parse and return a parse tree from the given [source]. *)
   val parse : string -> Output.t
 end
