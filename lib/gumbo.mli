@@ -1,4 +1,23 @@
 
+module Parseflags : sig
+  type t
+
+  type flag = 
+    | Normal
+    | By_parser
+    | Implicit_end_tag
+    | Implied
+    | Converted_from_end_tag
+    | From_isindex
+    | From_image
+    | Reconstructed_formatting_element
+    | Adoption_agency_cloned
+    | Adoption_agency_moved
+    | Foster_parented
+
+  val is_set : t -> flag -> bool
+end
+
 module Source : sig
   type pos = {
       line    : int;
@@ -234,7 +253,7 @@ and  Node : sig
   val parent : t -> t option 
   val index_within_parent : t -> int
   val value : t -> value 
-  (* TODO: val parse_flags : t -> ? *)
+  val parse_flags : t -> Parseflags.t
 end 
 
 

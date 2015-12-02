@@ -454,6 +454,12 @@ value ogumbo_node_value(value onode) {
   CAMLreturn(result);
 }
 
+value ogumbo_node_parse_flags(value onode) {
+  CAMLparam1(onode);
+  GumboNode *node = ptr_pair_val(onode)->pointer;
+  printf("parse_flags = %u\n", node->parse_flags);
+  CAMLreturn(Val_int(node->parse_flags));
+}
 
 /* Element */
 
@@ -647,4 +653,20 @@ value ogumbo_attr_value_end(value oattr) {
   CAMLparam1(oattr);
   GumboAttribute *attr = ptr_pair_val(oattr)->pointer;
   CAMLreturn(value_of_source_pos(&attr->value_end));
+}
+
+
+/* Parse flags */
+value ogumbo_parseflags_is_set(value oparseflags, value oflag) {
+  CAMLparam2(oparseflags, oflag);
+
+  int flags = Int_val(oparseflags);
+  int flag_num = Int_val(oflag);
+
+  int bit = 0;
+  if (flag_num > 0) {
+    bit = 1 << (flag_num - 1);
+  }
+
+  CAMLreturn(Val_bool( flags & bit ));
 }

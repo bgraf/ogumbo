@@ -1,4 +1,23 @@
 
+module Parseflags = struct
+  type t
+
+  type flag = 
+    | Normal
+    | By_parser
+    | Implicit_end_tag
+    | Implied
+    | Converted_from_end_tag
+    | From_isindex
+    | From_image
+    | Reconstructed_formatting_element
+    | Adoption_agency_cloned
+    | Adoption_agency_moved
+    | Foster_parented
+
+  external is_set : t -> flag -> bool = "ogumbo_parseflags_is_set"
+end
+
 module Source = struct
   type pos = {
       line    : int;
@@ -257,7 +276,7 @@ and  Node : sig
   val parent              : t -> t option 
   val index_within_parent : t -> int
   val value               : t -> value 
-
+  val parse_flags         : t -> Parseflags.t
 end = struct 
   type t
 
@@ -273,7 +292,7 @@ end = struct
   external parent               : t -> t option = "ogumbo_node_parent"
   external index_within_parent  : t -> int      = "ogumbo_node_index"
   external value                : t -> value    = "ogumbo_node_value"
-
+  external parse_flags          : t -> Parseflags.t = "ogumbo_node_parse_flags"
 end
 
 module Output = struct
