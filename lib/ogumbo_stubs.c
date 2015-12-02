@@ -304,12 +304,27 @@ value ogumbo_parse(value ostr)
   CAMLreturn(ptr_pair_value_new(container, NULL));
 }
 
+
+/* Document */
+
 value ogumbo_output_document(value ooutput) {
   CAMLparam1(ooutput);
   CAMLlocal1(result);
 
   result = ptr_pair_value_dup(ooutput, NULL);
   // result = ptr_pair_value_new(ptr_pair_val(ooutput)->container, NULL);
+  
+  CAMLreturn(result);
+}
+
+value ogumbo_output_document_node(value ooutput) {
+  CAMLparam1(ooutput);
+  CAMLlocal1(result);
+
+  struct ptr_pair *pair = ptr_pair_val(ooutput);
+
+  result = ptr_pair_value_new(pair->container,
+                              pair->container->output->document);
   
   CAMLreturn(result);
 }
@@ -365,6 +380,18 @@ value ogumbo_document_system_identifier(value odocument) {
   CAMLreturn(result);
 }
 
+value ogumbo_document_children(value odocument) {
+  CAMLparam1(odocument);
+  CAMLlocal1(result);
+
+  const struct ptr_pair *pair = ptr_pair_val(odocument);
+  
+  result = value_of_vector(
+      &pair->container->output->document->v.document.children,
+      pair->container);
+
+  CAMLreturn(result);
+}
 
 /* Node */
 

@@ -193,13 +193,15 @@ module rec Document : sig
   val name              : t -> string
   val public_identifier : t -> string
   val system_identifier : t -> string
+  val children          : t -> Node.t list
 end = struct
   type t
 
-  external has_doctype         : t -> bool    = "ogumbo_document_has_doctype"
-  external name                : t -> string  = "ogumbo_document_name"
-  external public_identifier   : t -> string  = "ogumbo_document_public_identifier"
-  external system_identifier   : t -> string  = "ogumbo_document_system_identifier"
+  external has_doctype        : t -> bool    = "ogumbo_document_has_doctype"
+  external name               : t -> string  = "ogumbo_document_name"
+  external public_identifier  : t -> string  = "ogumbo_document_public_identifier"
+  external system_identifier  : t -> string  = "ogumbo_document_system_identifier"
+  external children           : t -> Node.t list = "ogumbo_document_children"
 end
 
 and Element : sig
@@ -261,8 +263,9 @@ end
 module Output = struct
   type t
 
-  external document : t -> Document.t   = "ogumbo_output_document"
-  external root     : t -> Node.t       = "ogumbo_output_root"
+  external document       : t -> Document.t   = "ogumbo_output_document"
+  external document_node  : t -> Node.t       = "ogumbo_output_document_node"
+  external root           : t -> Node.t       = "ogumbo_output_root"
 end
 
 

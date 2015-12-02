@@ -190,6 +190,7 @@ module rec Document : sig
   val name              : t -> string
   val public_identifier : t -> string
   val system_identifier : t -> string
+  val children          : t -> Node.t list
 end
 
 and Element : sig
@@ -227,8 +228,9 @@ end
 module Output : sig
   type t
 
-  val document  : t -> Document.t
-  val root      : t -> Node.t
+  val document      : t -> Document.t
+  val document_node : t -> Node.t
+  val root          : t -> Node.t
 end
 
 
