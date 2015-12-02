@@ -227,6 +227,7 @@ and Element : sig
   val end_pos           : t -> Source.pos
   val children          : t -> Node.t list
   val attributes        : t -> Attribute.t list
+  val attribute         : t -> string -> Attribute.t option
 end = struct 
   type t
   external tag               : t -> Tag.t               = "ogumbo_elem_tag"
@@ -237,6 +238,7 @@ end = struct
   external end_pos           : t -> Source.pos          = "ogumbo_elem_end_pos"
   external children          : t -> Node.t list         = "ogumbo_elem_children"
   external attributes        : t -> Attribute.t list    = "ogumbo_elem_attributes"
+  external attribute         : t -> string -> Attribute.t option = "ogumbo_elem_attribute"
 end
 
 and  Node : sig

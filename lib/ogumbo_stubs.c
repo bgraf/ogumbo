@@ -531,6 +531,26 @@ value ogumbo_elem_attributes(value oelem) {
   CAMLreturn(result);
 }
 
+value ogumbo_elem_attribute(value oelem, value oname) {
+  CAMLparam2(oelem, oname);
+  CAMLlocal1(result);
+
+  struct ptr_pair *pair = ptr_pair_val(oelem);
+  GumboElement *elem = pair->pointer;
+
+  const char *name = String_val(oname);
+  GumboAttribute *attr = gumbo_get_attribute(&elem->attributes, name);
+
+  if (attr == NULL) {
+    result = Val_int(0);
+  } else {
+    result = caml_alloc(1,0);
+    Store_field(result, 0, ptr_pair_value_new(pair->container, attr));
+  }
+
+  CAMLreturn(result);
+}
+
 
 /* Tag */
 

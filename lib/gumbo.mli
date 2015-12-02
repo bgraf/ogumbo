@@ -215,6 +215,7 @@ and Element : sig
   val end_pos           : t -> Source.pos
   val children          : t -> Node.t list
   val attributes        : t -> Attribute.t list
+  val attribute         : t -> string -> Attribute.t option
 end
 
 and  Node : sig
