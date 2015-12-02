@@ -29,7 +29,13 @@ end
 module Attribute = struct
   type t
 
-  external namespace : t -> unit          = "ogumbo_attr_namespace"
+  type namespace =
+    | None
+    | XLINK
+    | XML
+    | XMLNS
+
+  external namespace : t -> namespace     = "ogumbo_attr_namespace"
   external name : t -> string             = "ogumbo_attr_name"
   external original_name : t -> string    = "ogumbo_attr_original_name"
   external value : t -> string            = "ogumbo_attr_value"
@@ -41,6 +47,12 @@ module Attribute = struct
 
   let to_string attr =
     Printf.sprintf "%s=\"%s\"" (name attr) (value attr)
+
+  let namespace_to_string = function
+    | None    -> "None"
+    | XLINK   -> "XLINK"
+    | XML     -> "XML"
+    | XMLNS   -> "XMLNS"
 end
 
 module Text = struct

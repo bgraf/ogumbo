@@ -600,7 +600,8 @@ value ogumbo_text_start_pos(value otext) {
 
 value ogumbo_attr_namespace(value oattr) {
   CAMLparam1(oattr);
-  CAMLreturn(Val_unit);
+  GumboAttribute *attr = ptr_pair_val(oattr)->pointer;
+  CAMLreturn(Val_int(attr->attr_namespace));
 }
 
 value ogumbo_attr_name(value oattr) {

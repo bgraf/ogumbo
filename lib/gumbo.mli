@@ -29,7 +29,13 @@ end
 module Attribute : sig
   type t
 
-  val namespace       : t -> unit
+  type namespace =
+    | None
+    | XLINK
+    | XML
+    | XMLNS
+
+  val namespace       : t -> namespace
   val name            : t -> string
   val original_name   : t -> string
   val value           : t -> string
@@ -39,6 +45,8 @@ module Attribute : sig
   val value_start     : t -> Source.pos
   val value_end       : t -> Source.pos
   val to_string       : t -> string
+
+  val namespace_to_string : namespace -> string
 end
 
 module Text : sig
